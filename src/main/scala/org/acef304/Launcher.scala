@@ -20,7 +20,7 @@ case class csvOperation(operationDate: Option[LocalDateTime], actualDate: Option
 object RaiffParser {
   def parseFile(path: String): Iterator[csvOperation] = {
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
-    scala.io.Source.fromFile(path, "cp1251").getLines().map{
+    scala.io.Source.fromFile(path, "cp1251").getLines().drop(2).map{
       str =>
         println(str)
         val splStr = str.split(";")
@@ -30,3 +30,19 @@ object RaiffParser {
     }
   }
 }
+
+trait CsvParser {
+  val fileEncoding: String
+  val separator: String
+
+  def parseFile(path: String): Iterator[List[String]] = {
+    scala.io.Source.fromFile(path, fileEncoding).getLines().map(_.split(separator).toList)
+  }
+}
+
+object RParser extends CsvParser{
+  override val fileEncoding: String = "cp1251"
+  override val separator: String = ";"
+
+}
+
